@@ -309,11 +309,62 @@
         }
 
         body.dark-mode #options-link a {
-            color: #a0a0a0;
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
 
         body.dark-mode #options-link a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        body.dark-mode .content a {
             color: #60a5fa;
+            text-decoration: none;
+        }
+
+        body.dark-mode .content a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        /* Updated sources container and links styles for dark mode */
+        body.dark-mode .sources-container {
+            background-color: #363636;
+        }
+
+        body.dark-mode .sources-header {
+            background-color: #404040;
+        }
+
+        body.dark-mode .source-row td {
+            border-color: #555;
+        }
+
+        body.dark-mode .source-row a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        body.dark-mode .source-row a:hover {
+            color: #93c5fd;
+            text-decoration: underline;
+        }
+
+        body.dark-mode .sources-container td {
+            border-bottom: 1px solid #555;
+        }
+
+        /* Updated loader styles for dark mode */
+        body.dark-mode .loader-container {
+            background: rgba(45, 45, 45, 0.8); /* Darker overlay */
+        }
+
+        body.dark-mode .loader {
+            border: 5px solid #404040; /* Darker border */
+            border-top: 5px solid #60a5fa; /* Match our link blue color */
         }
     </style>
 </head>
