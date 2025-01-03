@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const intervalInput = document.getElementById('interval'); // Reference to the interval input
     const baseCurrencySelect = document.getElementById('baseCurrency');
     const allowedCurrenciesSelect = document.getElementById('allowedCurrencies'); // Add this line
+    const darkModeToggle = document.getElementById('darkMode');
 
     // First get supported currencies from storage, then populate both selects
     chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.supportedCurrencies, (data) => {
@@ -51,6 +52,15 @@ document.addEventListener('DOMContentLoaded', () => {
         intervalInput.value = savedInterval; // Set the input field to the saved interval
     });
 
+    // Load dark mode setting
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.darkMode, (data) => {
+        const isDarkMode = data.darkMode || false;
+        darkModeToggle.checked = isDarkMode;
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        }
+    });
+
     // Save interval when the save button is clicked
     saveButton.addEventListener('click', () => {
 
@@ -71,12 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get the selected allowed currencies
         const selectedCurrencies = Array.from(allowedCurrenciesSelect.selectedOptions).map(option => option.value);
 
-        // Update the storage with both interval and allowed currencies
+        // Add dark mode to the storage update
+        const isDarkMode = darkModeToggle.checked;
         chrome.storage.sync.set({ 
             baseCurrency: selectedCurrency, 
             exchangeRates: {},
             interval: newInterval,
-            allowedCurrencies: selectedCurrencies 
+            allowedCurrencies: selectedCurrencies,
+            darkMode: isDarkMode
         }, () => {
             console.log(`Settings updated: interval=${newInterval}, currencies=${selectedCurrencies.join(',')}`);
             
@@ -94,8 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.runtime.sendMessage({ 
                 action: 'updateSettings', 
                 interval: newInterval,
-                allowedCurrencies: selectedCurrencies
+                allowedCurrencies: selectedCurrencies,
+                darkMode: isDarkMode
             });
         });
+    });
+
+    // Add dark mode toggle listener for immediate preview
+    darkModeToggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
     });
 });

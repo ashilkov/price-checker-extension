@@ -56,7 +56,8 @@ const DEFAULT_CONFIG = {
         interval: 'interval',
         exchangeRates: 'exchangeRates',
         ratesLastUpdated: 'ratesLastUpdated',
-        allowedCurrencies: 'allowedCurrencies'
+        allowedCurrencies: 'allowedCurrencies',
+        darkMode: 'darkMode'
     }
 };
 

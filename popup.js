@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.darkMode, (data) => {
+        const isDarkMode = data.darkMode || false;
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        }
+    });
+    
     const addButton = document.getElementById('add');
     const nameInput = document.getElementById('name');
     const selectorInput = document.getElementById('selector');
