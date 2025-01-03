@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Settings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 300px;
+            margin: 20px;
+        }
+        .config-section {
+            margin-bottom: 20px;
+        }
+        .config-section label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .config-section input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-section">
+        <label for="interval">Price Check Interval (minutes):</label>
+        <input type="number" id="interval" min="1" placeholder="Enter interval in minutes" />
+        <label for="baseCurrency">Base Currency:</label>
+        <select id="baseCurrency">
+            <option value="USD">$ USD</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="CZK">Kč CZK</option>
+        </select>
+        <br>
+        <br>
+
+        <button id="save">Save</button>
+    </div>
+    
+    <script src="options.js"></script>
+</body>
+</html>

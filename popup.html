@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Checker</title>
+    <style>
+        /* Add your styles here */
+        body {
+            font-family: Arial, sans-serif;
+            width: 600px; /* Increased width */
+            padding: 10px;
+        }
+        .collapsible {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-bottom: 15px;
+            position: relative;
+            padding-right: 40px;
+            font-weight: 600;
+        }
+        .collapsible:after {
+            content: '+';
+            position: absolute;
+            right: 15px;
+            transform: translateY(-50%);
+            top: 50%;
+            font-size: 20px;
+            color: rgba(255,255,255,0.8);
+            transition: transform 0.3s ease;
+        }
+        .collapsible.active:after {
+            content: '-';
+            transform: translateY(-50%) rotate(180deg);
+        }
+        .collapsible:hover {
+            background: linear-gradient(135deg, #5558e6 0%, #7c4feb 100%);
+        }
+        .content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease-out;
+            padding: 0;
+            margin: 0;
+            border: 1px solid transparent;
+            visibility: hidden;
+        }
+        
+        .content.active {
+            max-height: 800px; /* Increased to ensure full expansion */
+            opacity: 1;
+            padding: 15px;
+            border: 1px solid #007bff;
+            margin-top: 5px;
+            visibility: visible;
+            transition: all 0.3s ease-in;
+        }
+        h1 {
+            font-size: 18px;
+            margin: 0;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+        }
+        input, select, button {
+            width: calc(100% - 20px); /* Ensure inputs do not exceed popup width */
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 14px;
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            border-radius: 6px;
+            overflow: hidden; /* For rounded corners */
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .remove-btn, .refresh-btn, .remove-source-btn {
+            width: 14px;
+            height: 14px;
+            border-radius: 6px;
+            margin: 0 2px;
+            padding: 6px;
+        }
+        .refresh-btn {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        .remove-btn, .remove-source-btn {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+        .remove-btn:hover, .remove-source-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .remove-btn img, .refresh-btn img, .remove-source-btn img {
+            width: 14px;
+            height: 14px;
+            filter: brightness(0) invert(1); /* Make icons white */
+        }
+        #options-link {
+            margin-top: 10px;
+        }
+        .sources-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background-color: #f5f5f5;
+        }
+
+        .sources-container.active {
+            max-height: 300px; /* Adjust based on your content */
+            transition: max-height 0.3s ease-in;
+        }
+
+        .sources-header {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .source-row td {
+            padding: 8px;
+        }
+
+        .sources-container td {
+            border-bottom: 1px solid #ddd;
+        }
+
+        /* Updated button base styles */
+        button {
+            border-radius: 6px;
+            border: none;
+            background: #f0f0f0;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Main action button */
+        #add {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 12px 20px;
+            margin-top: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        #add:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+        }
+
+        /* Table action buttons */
+        .remove-btn, .refresh-btn, .remove-source-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            padding: 8px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .remove-btn, .remove-source-btn {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+
+        .remove-btn:hover, .remove-source-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* Updated Show Sources button */
+        .sources-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            min-width: 120px;
+        }
+
+        .sources-btn:hover {
+            background: linear-gradient(135deg, #5558e6 0%, #7c4feb 100%);
+        }
+
+        /* Move the arrow indicator to the right */
+        .sources-btn:after {
+            content: '▼';
+            font-size: 10px;
+            transition: transform 0.2s ease;
+            margin-left: auto;
+        }
+
+        .sources-btn.active:after {
+            transform: rotate(180deg);
+        }
+
+        /* Options link styling */
+        #options-link a {
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        #options-link a:hover {
+            color: #0d6efd;
+            text-decoration: underline;
+        }
+
+        /* Loader styles */
+        .loader-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loader-container.active {
+            display: flex;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #3498db;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+    <h1>Price Checker</h1>
+    <button class="collapsible">Add Product</button>
+    <div class="content">
+        <label for="productSelect">Select Product:</label>
+        <select id="productSelect">
+            <option value="new">New Product</option>
+        </select>
+
+        <label for="currency">Currency:</label>
+        <select id="currency">
+            <option value="USD">$ USD</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="CZK">Kč CZK</option>
+        </select>
+        <br><br>
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" placeholder="Product Name">
+        <label for="selector">Price Selector:</label>
+        <input type="text" id="selector" placeholder="CSS Selector">
+        <button id="add">Add Product</button>
+    </div>
+     
+    <table id="product-list">
+        <thead>
+            <tr>
+                <th width="40%">Name</th>
+                <th width="15%">Price</th>
+                <th width="30%">Sources</th>
+                <th width="15%">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Product rows will be added here -->
+        </tbody>
+    </table>
+    <div id="options-link">
+        <a href="options.html" target="_blank">Settings</a>
+    </div>
+    <script src="currencyHelper.js"></script>
+    <script src="helper.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
