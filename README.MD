@@ -45,21 +45,6 @@ Access the settings page to configure:
 
 ## Technical Details
 
-### File Structure
-├── assets/
-│ ├── icon-16.png
-│ ├── icon-64.png
-│ └── icon-128.png
-├── popup.html
-├── popup.js
-├── options.html
-├── options.js
-├── background.js
-├── content.js
-├── helper.js
-├── currencyHelper.js
-└── manifest.json
-
 ### Technologies Used
 
 - Chrome Extension APIs
@@ -75,15 +60,6 @@ Access the settings page to configure:
 - **Currency Helper**: Handles currency conversions and formatting
 - **Helper Functions**: Common utility functions
 
-## Contributing
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature/improvement`)
-3. Make your changes
-4. Commit your changes (`git commit -am 'Add new feature'`)
-5. Push to the branch (`git push origin feature/improvement`)
-6. Create a Pull Request
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
@@ -91,7 +67,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Exchange rate data provided by [ExchangeRate-API](https://www.exchangerate-api.com/)
-- Icons from [Your Icon Source]
 
 ## Support
 
