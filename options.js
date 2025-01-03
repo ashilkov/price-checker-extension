@@ -1,16 +1,53 @@
+// import { DEFAULT_CONFIG } from './config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const saveButton = document.getElementById('save'); // Reference to the save button
     const intervalInput = document.getElementById('interval'); // Reference to the interval input
     const baseCurrencySelect = document.getElementById('baseCurrency');
-    // Load saved base currency from storage when the options page is opened
-    chrome.storage.sync.get('baseCurrency', (data) => {
-        const savedCurrency = data.baseCurrency || 'USD'; // Default to USD if not set
-        baseCurrencySelect.value = savedCurrency; // Set the select field to the saved currency
+    const allowedCurrenciesSelect = document.getElementById('allowedCurrencies'); // Add this line
+
+    // First get supported currencies from storage, then populate both selects
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.supportedCurrencies, (data) => {
+        const supportedCurrencies = data.supportedCurrencies || DEFAULT_CONFIG.supportedCurrencies;
+        
+        // Populate allowed currencies select
+        Object.entries(supportedCurrencies).forEach(([code, data]) => {
+            const option = new Option(`${code} - ${data.symbol}`, code);
+            allowedCurrenciesSelect.appendChild(option);
+        });
+        
+        // Move the allowed currencies loading here and populate base currency select afterward
+        chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.allowedCurrencies, (data) => {
+            const savedCurrencies = data.allowedCurrencies || DEFAULT_CONFIG.defaultAllowedCurrencies;
+            
+            // Update allowed currencies selection
+            Array.from(allowedCurrenciesSelect.options).forEach(option => {
+                option.selected = savedCurrencies.includes(option.value);
+            });
+
+            // Populate base currency select with only allowed currencies
+            baseCurrencySelect.innerHTML = ''; // Clear existing options
+            savedCurrencies.forEach(currencyCode => {
+                const currencyData = supportedCurrencies[currencyCode];
+                const option = new Option(`${currencyData.symbol} ${currencyCode}`, currencyCode);
+                baseCurrencySelect.appendChild(option);
+            });
+
+            // Load saved base currency
+            chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.baseCurrency, (data) => {
+                const savedCurrency = data.baseCurrency || DEFAULT_CONFIG.baseCurrency;
+                if (savedCurrencies.includes(savedCurrency)) {
+                    baseCurrencySelect.value = savedCurrency;
+                } else {
+                    baseCurrencySelect.value = savedCurrencies[0]; // Default to first allowed currency
+                }
+            });
+        });
     });
 
     // Load saved interval from storage when the options page is opened
-    chrome.storage.sync.get('interval', (data) => {
-        const savedInterval = data.interval || 5; // Default to 5 minutes if not set
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.interval, (data) => {
+        const savedInterval = data.interval || DEFAULT_CONFIG.interval; // Default to 5 minutes if not set
         intervalInput.value = savedInterval; // Set the input field to the saved interval
     });
 
@@ -31,13 +68,34 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Save the new interval in storage
-        chrome.storage.sync.set({ interval: newInterval }, () => {
-            console.log(`Interval updated to ${newInterval} minutes.`);
-            alert(`Price check interval updated to ${newInterval} minutes.`); // Confirmation message
+        // Get the selected allowed currencies
+        const selectedCurrencies = Array.from(allowedCurrenciesSelect.selectedOptions).map(option => option.value);
+
+        // Update the storage with both interval and allowed currencies
+        chrome.storage.sync.set({ 
+            baseCurrency: selectedCurrency, 
+            exchangeRates: {},
+            interval: newInterval,
+            allowedCurrencies: selectedCurrencies 
+        }, () => {
+            console.log(`Settings updated: interval=${newInterval}, currencies=${selectedCurrencies.join(',')}`);
             
-            // Notify the background script about the new interval
-            chrome.runtime.sendMessage({ action: 'updateInterval', interval: newInterval });
+            // Show notification
+            const notification = document.getElementById('saveNotification');
+            notification.textContent = 'Settings saved successfully!';
+            notification.classList.add('show');
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+                    
+            // Notify the background script about the updates
+            chrome.runtime.sendMessage({ 
+                action: 'updateSettings', 
+                interval: newInterval,
+                allowedCurrencies: selectedCurrencies
+            });
         });
     });
 });

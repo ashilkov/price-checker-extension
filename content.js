@@ -1,6 +1,4 @@
 // content.js
-console.log("Content script loaded!");
-
 function extractPrice(html, selector) {
     const doc = new DOMParser().parseFromString(html, 'text/html'); // Parse HTML string into a document
     const priceElement = doc.querySelector(selector); // Use the selector to find the price element

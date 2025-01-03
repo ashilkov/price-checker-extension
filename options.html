@@ -7,30 +7,67 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            width: 300px;
-            margin: 20px;
+            width: 600px;
+            padding: 10px;
         }
+
         .config-section {
             margin-bottom: 20px;
         }
-        .config-section label {
+
+        label {
+            margin-top: 10px;
             display: block;
-            margin-bottom: 5px;
         }
-        .config-section input {
-            width: 100%;
+
+        input, select, button {
+            width: calc(100% - 20px);
+            margin-top: 5px;
             padding: 8px;
-            margin-bottom: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+            border-radius: 6px;
         }
+
+        select[multiple] {
+            height: 150px;
+        }
+
         button {
-            padding: 10px 15px;
-            background-color: #007bff;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
             color: white;
+            padding: 12px 20px;
+            margin-top: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
             border: none;
             cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+
         button:hover {
-            background-color: #0056b3;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .save-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            pointer-events: none;
+        }
+
+        .save-notification.show {
+            opacity: 1;
         }
     </style>
 </head>
@@ -38,12 +75,12 @@
     <div class="config-section">
         <label for="interval">Price Check Interval (minutes):</label>
         <input type="number" id="interval" min="1" placeholder="Enter interval in minutes" />
+        <select id="allowedCurrencies" multiple size="5">
+            <!-- Options will be populated by JavaScript -->
+        </select>
         <label for="baseCurrency">Base Currency:</label>
         <select id="baseCurrency">
-            <option value="USD">$ USD</option>
-            <option value="EUR">€ EUR</option>
-            <option value="GBP">£ GBP</option>
-            <option value="CZK">Kč CZK</option>
+            <!-- Options will be populated by JavaScript -->
         </select>
         <br>
         <br>
@@ -51,6 +88,9 @@
         <button id="save">Save</button>
     </div>
     
+    <div id="saveNotification" class="save-notification"></div>
+    
     <script src="options.js"></script>
+    <script src="config.js"></script>
 </body>
 </html>

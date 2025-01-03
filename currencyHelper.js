@@ -1,9 +1,4 @@
-let currentExchangeRates = {
-    'USD': 1,
-    'EUR': 0.92,
-    'GBP': 0.79,
-    'CZK': 22.87
-};
+let currentExchangeRates = {};
 
 // Format price based on selected currency
 function formatPrice(price, currency) {
@@ -15,34 +10,29 @@ function formatPrice(price, currency) {
     if (typeof price !== 'number' || isNaN(price)) {
         return 'Invalid price';
     }
-
+    let supportedCurrency = DEFAULT_CONFIG.supportedCurrencies;
+    let pattern = DEFAULT_CONFIG.defaultPattern;
     switch (currency) {
-        case 'USD':
-            return `$${price.toFixed(2)}`;
-        case 'EUR':
-            return `€${price.toFixed(2)}`;
-        case 'GBP':
-            return `£${price.toFixed(2)}`;
         case 'CZK':
-            return `${price.toFixed(2)} Kč`;
+            return supportedCurrency.CZK.pattern.replace('${amount}', `${price.toFixed(2)}`);
         default:
-            return `$${price.toFixed(2)}`;
+            return pattern.replace('${amount}', `${price.toFixed(2)}`);
     }
 }
 
 function convertPriceBaseCurrency(price, currency) {
     if (!price) return 0;
-    let baseCurrency = chrome.storage.sync.get('baseCurrency');
+    let baseCurrency = chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.baseCurrency);
     if (currency === baseCurrency) return price;
     
     return price / currentExchangeRates[currency];
 }
 
 function getBaseCurrencyRates() {
-    return chrome.storage.sync.get('baseCurrency')
+    return chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.baseCurrency)
         .then(result => {
-            const baseCurrency = result.baseCurrency || 'USD';
-            return chrome.storage.local.get(['exchangeRates', 'ratesLastUpdated'])
+            const baseCurrency = result.baseCurrency || DEFAULT_CONFIG.baseCurrency;
+            return chrome.storage.local.get([DEFAULT_CONFIG.storageKeys.exchangeRates, DEFAULT_CONFIG.storageKeys.ratesLastUpdated])
                 .then(({ exchangeRates, ratesLastUpdated }) => {
                     const now = new Date();
                     if (exchangeRates && ratesLastUpdated && 
@@ -67,13 +57,7 @@ function getBaseCurrencyRates() {
                         })
                         .catch(error => {
                             console.error('Error fetching exchange rates:', error);
-                            const fallbackRates = {
-                                'USD': 1,
-                                'EUR': 0.92,
-                                'GBP': 0.79,
-                                'CZK': 22.87
-                            };
-                            currentExchangeRates = fallbackRates;
+                            currentExchangeRates = DEFAULT_CONFIG.exchangeRates;
                             return fallbackRates;
                         });
                 });

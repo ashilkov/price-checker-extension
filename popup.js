@@ -551,4 +551,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Function to populate currency select
+    function populateCurrencySelect() {
+        const currencySelect = document.getElementById('currency');
+        
+        // Clear existing options
+        currencySelect.innerHTML = '';
+        
+        // Get both allowed currencies and base currency from storage
+        chrome.storage.sync.get(['allowedCurrencies', 'baseCurrency'], (data) => {
+            const allowedCurrencies = data.allowedCurrencies || DEFAULT_CONFIG.defaultAllowedCurrencies;
+            const baseCurrency = data.baseCurrency || DEFAULT_CONFIG.baseCurrency;
+            
+            // Add options only for allowed currencies
+            allowedCurrencies.forEach(code => {
+                const details = DEFAULT_CONFIG.supportedCurrencies[code];
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${details.symbol} ${code}`;
+                
+                // Set selected if this is the base currency
+                if (code === baseCurrency) {
+                    option.selected = true;
+                }
+                
+                currencySelect.appendChild(option);
+            });
+        });
+    }
+
+    // Call it after DOMContentLoaded
+    populateCurrencySelect();
 });

@@ -1,12 +1,13 @@
 importScripts('helper.js');
 importScripts('currencyHelper.js');
+importScripts('config.js');
 
 let newPriceUpdatesCount = 0; // Initialize a counter for new price updates
 
 // Initialize price checking with the current interval
 function initializePriceCheck() {
-    chrome.storage.sync.get('interval', (data) => {
-        const interval = data.interval || 5; // Default to 5 minutes
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.interval, (data) => {
+        const interval = data.interval || DEFAULT_CONFIG.interval; // Default to 5 minutes
         console.log("Starting price check with interval: " + interval);
         startPriceCheck(interval);
     });
@@ -36,7 +37,7 @@ initializePriceCheck();
 initializeBadge();
 
 async function checkPrices() {
-    chrome.storage.sync.get('products', async (data) => {
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.products, async (data) => {
         newPriceUpdatesCount = 0; // Reset the counter before checking
         const products = data.products || [];
 
@@ -114,7 +115,7 @@ function extractPriceFromHtml(html, selector) {
 function notifyUser(product, source) {
     const options = {
         type: "basic",
-        iconUrl: "icon-128.png", // Path to your icon
+        iconUrl: "icon-128.png",
         title: "We found a better price!",
         message: `The price for "${product.name}" has changed to ${formatPrice(source.price, source.currency)}.`,
         priority: 2
@@ -140,7 +141,7 @@ function updateBadge(totalProducts) {
 
 // Show count on extension load
 function initializeBadge() {
-    chrome.storage.sync.get('products', (data) => {
+    chrome.storage.sync.get(DEFAULT_CONFIG.storageKeys.products, (data) => {
         const totalProducts = data.products ? data.products.length : 0;
         console.log(totalProducts);
         updateBadge(totalProducts); // Update badge on startup with the total product count
